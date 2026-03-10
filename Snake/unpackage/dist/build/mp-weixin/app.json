@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/game/game"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "SUPER SNAKE",
+    "navigationBarBackgroundColor": "#e75c10",
+    "backgroundColor": "#5c94fc"
+  },
+  "usingComponents": {}
+}
