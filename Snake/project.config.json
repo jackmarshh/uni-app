@@ -53,16 +53,16 @@
   "packOptions": {
     "ignore": [
       {
-        "type": "folder",
-        "value": "unpackage"
+        "value": "unpackage",
+        "type": "folder"
       },
       {
-        "type": "folder",
-        "value": ".hbuilderx"
+        "value": ".hbuilderx",
+        "type": "folder"
       },
       {
-        "type": "file",
-        "value": ".gitignore"
+        "value": ".gitignore",
+        "type": "file"
       }
     ],
     "include": []

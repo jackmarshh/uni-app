@@ -1,6 +1,6 @@
 {
   "libVersion": "3.14.3",
-  "projectname": "超级贪贪贪吃蛇",
+  "projectname": "Snake",
   "setting": {
     "urlCheck": true,
     "coverView": true,
