@@ -42,6 +42,17 @@ let bgParticles = []; // Background animation particles
 let gameParticles = []; // In-game effect particles
 let frameCounter = 0;
 
+// Level Themes
+const LEVEL_THEMES = [
+    { name: '1-1', bg: '#5c94fc', border: '#e75c10', grid: 'rgba(255, 255, 255, 0.18)' }, // Default Blue
+    { name: '1-2', bg: '#10b981', border: '#047857', grid: 'rgba(255, 255, 255, 0.15)' }, // Emerald
+    { name: '1-3', bg: '#f59e0b', border: '#b45309', grid: 'rgba(255, 255, 255, 0.15)' }, // Amber
+    { name: '1-4', bg: '#ec4899', border: '#be185d', grid: 'rgba(255, 255, 255, 0.15)' }, // Pink
+    { name: '2-1', bg: '#6366f1', border: '#4338ca', grid: 'rgba(255, 255, 255, 0.15)' }, // Indigo
+    { name: '2-2', bg: '#ef4444', border: '#b91c1c', grid: 'rgba(255, 255, 255, 0.15)' }, // Red
+    { name: '2-3', bg: '#1e293b', border: '#cbd5e1', grid: 'rgba(255, 255, 255, 0.1)' }   // Dark
+];
+
 // New Systems Data
 let totalCoins = 0; // Persistent currency
 let currentSkin = 'default';
@@ -69,8 +80,19 @@ const SKINS = {
 };
 
 // UI Layout
+let SAFE_AREA_TOP = 0;
+try {
+    const sysInfo = wx.getSystemInfoSync();
+    if (sysInfo.safeArea) {
+        SAFE_AREA_TOP = sysInfo.safeArea.top;
+    }
+} catch (e) {
+    // Fallback if not in WeChat environment
+    SAFE_AREA_TOP = 20; 
+}
+
 const GAME_AREA_X = (SCREEN_WIDTH - GRID_WIDTH * CELL_SIZE) / 2;
-const GAME_AREA_Y = 100; // Top padding for header
+const GAME_AREA_Y = 100 + SAFE_AREA_TOP; // Top padding for header + safe area
 
 // Assets
 const marioFont = "bold 20px Arial"; // Fallback font
@@ -339,14 +361,17 @@ function draw() {
   }
   
   // Clear Screen
-  ctx.fillStyle = COLORS.BACKGROUND;
+  const levelIndex = Math.floor(score / 100) % LEVEL_THEMES.length;
+  const currentTheme = LEVEL_THEMES[levelIndex];
+
+  ctx.fillStyle = currentTheme.bg;
   ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
   
   // Draw Header
-  drawHeader();
+  drawHeader(currentTheme);
   
   // Draw Game Area
-  drawGameArea();
+  drawGameArea(currentTheme);
   
   // Overlays
   if (gameOver) drawGameOverScreen();
@@ -354,21 +379,24 @@ function draw() {
   if (showHelp) drawHelpScreen();
 }
 
-function drawHeader() {
+function drawHeader(theme) {
   ctx.fillStyle = COLORS.TEXT;
   ctx.font = "bold 14px Arial";
   ctx.textAlign = "center";
   
-  // MARIO SCORE
-  ctx.fillText("MARIO", SCREEN_WIDTH * 0.15, 30);
+  const topY = 30 + SAFE_AREA_TOP;
+  const bottomY = 55 + SAFE_AREA_TOP;
+
+  // SCORE
+  ctx.fillText("SCORE", SCREEN_WIDTH * 0.15, topY);
   ctx.font = "bold 18px Arial";
-  ctx.fillText(score.toString().padStart(6, '0'), SCREEN_WIDTH * 0.15, 55);
+  ctx.fillText(score.toString().padStart(6, '0'), SCREEN_WIDTH * 0.15, bottomY);
   
   // COINS
   ctx.font = "bold 14px Arial";
-  ctx.fillText("COINS", SCREEN_WIDTH * 0.4, 30);
+  ctx.fillText("COINS", SCREEN_WIDTH * 0.4, topY);
   const iconX = SCREEN_WIDTH * 0.38;
-  const iconY = 50;
+  const iconY = 50 + SAFE_AREA_TOP;
   const r = 7.5;
   const g = ctx.createRadialGradient(iconX - 2, iconY - 2, 1, iconX, iconY, r);
   g.addColorStop(0, '#fff7b2');
@@ -394,24 +422,24 @@ function drawHeader() {
   ctx.stroke();
   ctx.fillStyle = COLORS.TEXT;
   ctx.font = "bold 18px Arial";
-  ctx.fillText("x" + Math.floor(score / 10).toString().padStart(2, '0'), SCREEN_WIDTH * 0.45, 55);
+  ctx.fillText("x" + Math.floor(score / 10).toString().padStart(2, '0'), SCREEN_WIDTH * 0.45, bottomY);
   
-  // WORLD
+  // LEVEL
   ctx.font = "bold 14px Arial";
-  ctx.fillText("WORLD", SCREEN_WIDTH * 0.65, 30);
+  ctx.fillText("LEVEL", SCREEN_WIDTH * 0.65, topY);
   ctx.font = "bold 18px Arial";
-  ctx.fillText("1-1", SCREEN_WIDTH * 0.65, 55);
+  ctx.fillText(theme ? theme.name : "1-1", SCREEN_WIDTH * 0.65, bottomY);
   
   // TOP
   ctx.font = "bold 14px Arial";
-  ctx.fillText("TOP", SCREEN_WIDTH * 0.85, 30);
+  ctx.fillText("TOP", SCREEN_WIDTH * 0.85, topY);
   ctx.font = "bold 18px Arial";
-  ctx.fillText(highScore.toString().padStart(6, '0'), SCREEN_WIDTH * 0.85, 55);
+  ctx.fillText(highScore.toString().padStart(6, '0'), SCREEN_WIDTH * 0.85, bottomY);
 }
 
-function drawGameArea() {
+function drawGameArea(theme) {
   // Background
-  ctx.fillStyle = COLORS.GAME_BG;
+  ctx.fillStyle = theme ? theme.grid : COLORS.GAME_BG;
   ctx.fillRect(GAME_AREA_X, GAME_AREA_Y, GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE);
   
   // Background Grid
@@ -433,7 +461,7 @@ function drawGameArea() {
   ctx.restore();
 
   // Border
-  ctx.strokeStyle = COLORS.BORDER;
+  ctx.strokeStyle = theme ? theme.border : COLORS.BORDER;
   ctx.lineWidth = 4;
   ctx.strokeRect(GAME_AREA_X, GAME_AREA_Y, GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE);
   
@@ -783,7 +811,7 @@ function drawStartScreen() {
   ctx.fillStyle = '#fbbf24';
   ctx.font = "bold 18px Arial";
   ctx.textAlign = "right";
-  ctx.fillText(`💰 ${totalCoins}`, SCREEN_WIDTH - 20, 40);
+  ctx.fillText(`💰 ${totalCoins}`, SCREEN_WIDTH - 20, 40 + SAFE_AREA_TOP);
 
   // Footer
   ctx.font = "14px Arial";
