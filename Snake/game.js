@@ -387,14 +387,14 @@ function drawHeader(theme) {
   const topY = 30 + SAFE_AREA_TOP;
   const bottomY = 55 + SAFE_AREA_TOP;
 
-  // SCORE
-  ctx.fillText("SCORE", SCREEN_WIDTH * 0.15, topY);
+  // SCORE -> 得分
+  ctx.fillText("得分", SCREEN_WIDTH * 0.15, topY);
   ctx.font = "bold 18px Arial";
   ctx.fillText(score.toString().padStart(6, '0'), SCREEN_WIDTH * 0.15, bottomY);
   
-  // COINS
+  // COINS -> 金币
   ctx.font = "bold 14px Arial";
-  ctx.fillText("COINS", SCREEN_WIDTH * 0.4, topY);
+  ctx.fillText("金币", SCREEN_WIDTH * 0.4, topY);
   const iconX = SCREEN_WIDTH * 0.38;
   const iconY = 50 + SAFE_AREA_TOP;
   const r = 7.5;
@@ -424,15 +424,15 @@ function drawHeader(theme) {
   ctx.font = "bold 18px Arial";
   ctx.fillText("x" + Math.floor(score / 10).toString().padStart(2, '0'), SCREEN_WIDTH * 0.45, bottomY);
   
-  // LEVEL
+  // LEVEL -> 关卡
   ctx.font = "bold 14px Arial";
-  ctx.fillText("LEVEL", SCREEN_WIDTH * 0.65, topY);
+  ctx.fillText("关卡", SCREEN_WIDTH * 0.65, topY);
   ctx.font = "bold 18px Arial";
   ctx.fillText(theme ? theme.name : "1-1", SCREEN_WIDTH * 0.65, bottomY);
   
-  // TOP
+  // TOP -> 最高分
   ctx.font = "bold 14px Arial";
-  ctx.fillText("TOP", SCREEN_WIDTH * 0.85, topY);
+  ctx.fillText("最高分", SCREEN_WIDTH * 0.85, topY);
   ctx.font = "bold 18px Arial";
   ctx.fillText(highScore.toString().padStart(6, '0'), SCREEN_WIDTH * 0.85, bottomY);
 }
@@ -1039,11 +1039,11 @@ function drawModalBase(title) {
 }
 
 function drawGameOverScreen() {
-  drawOverlay("GAME OVER", "TRY AGAIN");
+  drawOverlay("游戏结束", "再来一局");
 }
 
 function drawPauseScreen() {
-  drawOverlay("PAUSED", "RESUME");
+  drawOverlay("游戏暂停", "继续游戏");
 }
 
 function drawHelpScreen() {
@@ -1177,25 +1177,76 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
 }
 
 function drawOverlay(title, btnText) {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-  drawArtTitle(title, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50);
-  
-  // Button
-  const btnW = 200;
-  const btnH = 50;
-  const btnX = (SCREEN_WIDTH - btnW) / 2;
-  const btnY = SCREEN_HEIGHT / 2 + 20;
-  
-  ctx.fillStyle = '#e75c10';
-  ctx.fillRect(btnX, btnY, btnW, btnH);
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(btnX, btnY, btnW, btnH);
-  
-  ctx.fillStyle = '#fff';
-  ctx.font = "bold 24px Arial";
-  ctx.fillText(btnText, SCREEN_WIDTH / 2, btnY + 33);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    
+    const boxW = 300;
+    const boxH = 220;
+    const boxX = (SCREEN_WIDTH - boxW) / 2;
+    const boxY = (SCREEN_HEIGHT - boxH) / 2;
+    
+    // Modal shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    drawRoundRect(ctx, boxX + 8, boxY + 8, boxW, boxH, 20);
+    ctx.fill();
+
+    // Modal background
+    ctx.fillStyle = '#1e293b';
+    drawRoundRect(ctx, boxX, boxY, boxW, boxH, 20);
+    ctx.fill();
+    
+    // Modal border
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    // Inner highlight
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.lineWidth = 2;
+    drawRoundRect(ctx, boxX + 4, boxY + 4, boxW - 8, boxH - 8, 16);
+    ctx.stroke();
+
+    // Draw Title
+    drawArtTitle(title, SCREEN_WIDTH / 2, boxY + 70);
+    
+    // Button
+    const btnW = 180;
+    const btnH = 54;
+    const btnX = (SCREEN_WIDTH - btnW) / 2;
+    const btnY = boxY + boxH - 80;
+    
+    // Button shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    drawRoundRect(ctx, btnX + 3, btnY + 5, btnW, btnH, 27);
+    ctx.fill();
+
+    // Button gradient
+    const btnGrad = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
+    btnGrad.addColorStop(0, '#ff9a44');
+    btnGrad.addColorStop(1, '#e75c10');
+    
+    ctx.fillStyle = btnGrad;
+    drawRoundRect(ctx, btnX, btnY, btnW, btnH, 27);
+    ctx.fill();
+    
+    // Button Border
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Button highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    drawRoundRect(ctx, btnX + 8, btnY + 4, btnW - 16, btnH/2 - 2, 14);
+    ctx.fill();
+    
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = "bold 22px Arial";
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowOffsetY = 2;
+    ctx.fillText(btnText, SCREEN_WIDTH / 2, btnY + btnH / 2);
+    ctx.shadowOffsetY = 0; // reset shadow
 }
 
 // Input Handling
