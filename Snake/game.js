@@ -813,11 +813,7 @@ function drawStartScreen() {
   ctx.textAlign = "right";
   ctx.fillText(`💰 ${totalCoins}`, SCREEN_WIDTH - 20, 40 + SAFE_AREA_TOP);
 
-  // Footer
-  ctx.font = "14px Arial";
-  ctx.fillStyle = "rgba(255,255,255,0.8)";
-  ctx.textAlign = "center";
-  ctx.fillText("© 2026 超级贪贪贪吃蛇", SCREEN_WIDTH / 2, SCREEN_HEIGHT - 30);
+
 }
 
 function drawSystemButton(ctx, x, y, w, h, text, color) {
